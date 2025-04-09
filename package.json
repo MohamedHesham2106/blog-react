@@ -11,8 +11,8 @@
     "format": "npx prettier --write ."
   },
   "dependencies": {
-    "@fontsource/inter": "^5.2.5",
     "@fontsource/playfair-display": "^5.2.5",
+    "@fontsource/poppins": "^5.2.5",
     "@hookform/resolvers": "^5.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
