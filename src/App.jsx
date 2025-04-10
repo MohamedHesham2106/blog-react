@@ -1,20 +1,18 @@
-import { Fragment } from "react";
-
-import "@fontsource/poppins";
 import "@fontsource/playfair-display";
+import "@fontsource/poppins";
 import { Route, Routes } from "react-router";
 
-import { Navbar } from "./components/navbar";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   return (
-    <Fragment>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </Fragment>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
   );
 }
 
