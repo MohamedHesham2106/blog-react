@@ -8,7 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 
-import { Nirvana } from "./ui/logo";
+import { Nirvana } from "./svg/logo";
 
 const SECTION_HEIGHT = 1500;
 
