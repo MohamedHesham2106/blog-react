@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { LoginSVG } from "../components/svg/login-svg";
@@ -13,6 +13,7 @@ import { Nirvana } from "../components/svg/logo";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { useAuth } from "../hooks/use-auth";
 import { registerUtil } from "../libs/auth.service";
 import { registerSchema } from "../libs/schemas";
 
@@ -21,6 +22,8 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
   // Form Validation
   const {
     register,
@@ -50,6 +53,10 @@ export default function Register() {
   const onSubmit = async (data) => {
     if (isValid) startTransition(() => mutate(data));
   };
+  // protected route
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
   return (
     <main className="h-dvh flex items-center justify-between flex-col pt-8 pb-16 overflow-hidden ">
       <Link to="/">

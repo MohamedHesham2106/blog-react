@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 import { toast } from "sonner";
 
 import { LoginSVG } from "../components/svg/login-svg";
@@ -21,7 +21,8 @@ export default function Login() {
   // states
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const { setAuth } = useAuth();
+  const { setAuth, isAuthenticated } = useAuth();
+
   // Form Validation
   const {
     register,
@@ -42,7 +43,6 @@ export default function Login() {
     onSuccess: ({ token }) => {
       reset();
       setAuth(token);
-      toast.success("Login Successful");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -52,6 +52,12 @@ export default function Login() {
   const onSubmit = async (data) => {
     if (isValid) startTransition(() => mutate(data));
   };
+
+  // protected route
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
   return (
     <main className="h-dvh flex items-center justify-between flex-col pt-8 pb-16 overflow-hidden ">
       <Link to="/">

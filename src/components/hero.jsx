@@ -8,6 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 
+import { Parallax } from "./parallax";
 import { Nirvana } from "./svg/logo";
 
 const SECTION_HEIGHT = 1500;
@@ -59,14 +60,10 @@ export const Hero = () => {
           backgroundRepeat: "no-repeat",
         }}
       />
-
+      <Parallax />
       {/* Nirvana logo */}
       <motion.div className={logoClass} style={{ opacity }}>
         <Nirvana width="md:w-96 w-46" />
-        <p className="text-base md:text-xl w-1/2 text-center font-playfair">
-          Discover thought-provoking articles on technology, design, and
-          development from industry experts.
-        </p>
       </motion.div>
     </section>
   );

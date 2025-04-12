@@ -1,26 +1,34 @@
 import { useState } from "react";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { Link, NavLink } from "react-router";
 
+import { useAuth } from "../hooks/use-auth";
 import { cn } from "../libs/util";
 import { Button } from "./ui/button";
+import { UserButton } from "./user-button";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const navItems = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Blog", href: "/posts" },
-    { name: "Login", href: "/login" },
-    { name: "Register", href: "/register" },
+    //filter out
+    ...(!isAuthenticated
+      ? [
+          { name: "Login", href: "/login" },
+          { name: "Register", href: "/register" },
+        ]
+      : []),
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // variants
+  // Animation variants
   const buttonVariants = {
     hidden: { opacity: 0, scale: 0.9 },
     visible: (i) => ({
@@ -40,6 +48,18 @@ export const Navbar = () => {
     },
   };
 
+  const menuItemVariants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+      },
+    },
+  };
+
   return (
     <motion.header
       initial={{ opacity: 0 }}
@@ -49,7 +69,7 @@ export const Navbar = () => {
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Hamburger Menu Button - Always Visible */}
+          {/* Hamburger Menu Button */}
           <motion.button
             className="cursor-pointer z-50"
             onClick={toggleMenu}
@@ -64,7 +84,7 @@ export const Navbar = () => {
             )}
           </motion.button>
 
-          {/* Logo - Center */}
+          {/* Logo */}
           <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
             <Link
               to="/"
@@ -73,32 +93,39 @@ export const Navbar = () => {
               Nirvana
             </Link>
           </div>
-          <div className="hidden md:flex items-center space-x-4">
-            <motion.div
-              custom={0}
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              variants={buttonVariants}
-            >
-              <Link to="/login" className="font-poppins flex items-center">
-                <Button className="font-bold">Login</Button>
-              </Link>
-            </motion.div>
-            <motion.div
-              custom={1}
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              variants={buttonVariants}
-            >
-              <Link to="/register" className="font-poppins flex items-center">
-                <Button variant="ghost">Register</Button>
-              </Link>
-            </motion.div>
-          </div>
+
+          {/* Desktop Auth Buttons */}
+          {!isAuthenticated ? (
+            <div className="hidden md:flex items-center space-x-4">
+              <motion.div
+                custom={0}
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                variants={buttonVariants}
+              >
+                <Link to="/login" className="font-poppins flex items-center">
+                  <Button>Login</Button>
+                </Link>
+              </motion.div>
+              <motion.div
+                custom={1}
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                variants={buttonVariants}
+              >
+                <Link to="/register" className="font-poppins flex items-center">
+                  <Button variant="ghost">Register</Button>
+                </Link>
+              </motion.div>
+            </div>
+          ) : (
+            <UserButton />
+          )}
         </div>
-        {/* Menu */}
+
+        {/* Mobile Menu Overlay */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -127,17 +154,7 @@ export const Navbar = () => {
                     <motion.li
                       key={item.name}
                       className="w-full text-center"
-                      variants={{
-                        hidden: { y: 40, opacity: 0 },
-                        visible: {
-                          y: 0,
-                          opacity: 1,
-                          transition: {
-                            type: "spring",
-                            stiffness: 100,
-                          },
-                        },
-                      }}
+                      variants={menuItemVariants}
                     >
                       <NavLink
                         to={item.href}
