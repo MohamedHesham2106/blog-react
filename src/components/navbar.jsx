@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { useWindowScroll } from "@uidotdev/usehooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Link, NavLink } from "react-router";
@@ -11,8 +12,9 @@ import { UserButton } from "./user-button";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [{ y }] = useWindowScroll();
+  const hasScrolled = y > 0;
   const { isAuthenticated } = useAuth();
-
   const navItems = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
@@ -65,7 +67,12 @@ export const Navbar = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ ease: "easeInOut", duration: 1.5 }}
-      className="fixed top-0 z-50 w-full bg-background/10 backdrop-blur supports-[backdrop-filter]:bg-background/5"
+      className={cn(
+        "fixed top-0 z-50 w-full transition-colors duration-300",
+        hasScrolled
+          ? "bg-background/10 backdrop-blur supports-[backdrop-filter]:bg-background/5"
+          : "bg-transparent",
+      )}
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">

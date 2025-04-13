@@ -31,4 +31,17 @@ const loginSchema = yup.object({
     .required("Password is required."),
 });
 
-export { registerSchema, loginSchema };
+const blogSchema = yup
+  .object({
+    title: yup
+      .string()
+      .required("Title is required")
+      .min(5, "Title must be at least 5 characters"),
+    description: yup
+      .string()
+      .required("Blog Description is required")
+      .min(20, "Description must be at least 20 characters"),
+  })
+  .required();
+
+export { registerSchema, loginSchema, blogSchema };
