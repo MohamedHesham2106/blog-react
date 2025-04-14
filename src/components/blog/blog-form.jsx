@@ -10,11 +10,15 @@ import { toast } from "sonner";
 import { useAuth } from "../../hooks/use-auth";
 import { createBlog } from "../../libs/blog.service";
 import { blogSchema } from "../../libs/schemas";
+import { Preview } from "../preview";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/text-area";
 import { useUploadThing } from "../uploadthing";
+
+const placeholderImg =
+  "https://images.unsplash.com/photo-1656267097068-3b2998427f61?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 export const BlogForm = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -31,6 +35,7 @@ export const BlogForm = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    getValues,
   } = useForm({
     resolver: yupResolver(blogSchema),
     defaultValues: {
@@ -100,8 +105,7 @@ export const BlogForm = () => {
       <div
         className="top-0 w-full absolute min-h-1/2 -z-50 object-cover inset-shadow-background inset-shadow before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-b before:from-transparent before:via-transparent before:to-background before:via-30% before:to-80%"
         style={{
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1656267097068-3b2998427f61?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
+          backgroundImage: `url(${placeholderImg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -116,16 +120,24 @@ export const BlogForm = () => {
           className="max-w-md mx-auto"
         >
           <div className="border border-border px-6 py-4 space-y-4 rounded-lg bg-background">
+            {/* Form */}
             <div className="space-y-2">
-              <h1 className="text-2xl font-playfair font-bold">
-                Start a New Blog
-              </h1>
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-playfair font-bold">
+                  Start a New Blog
+                </h1>
+                {/* Preview Modal*/}
+                <Preview
+                  current={getValues}
+                  poster={imagePreview || placeholderImg}
+                />
+              </div>
+
               <p className="text-sm text-muted-foreground font-poppins">
                 Share your thoughts with the world.
               </p>
             </div>
 
-            {/* Form */}
             <form
               className="flex flex-col space-y-4"
               onSubmit={handleSubmit(onSubmit)}

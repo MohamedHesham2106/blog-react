@@ -10,12 +10,10 @@ import "./global.css";
 
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Toaster />
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
-  </StrictMode>,
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <Toaster />
+      <App />
+    </BrowserRouter>
+  </QueryClientProvider>,
 );

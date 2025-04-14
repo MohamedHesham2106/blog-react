@@ -2,6 +2,7 @@ import { Fragment } from "react";
 
 import { motion } from "framer-motion";
 
+import { BlogList } from "../components/blog/blog-list";
 import { Hero } from "../components/hero";
 import { Navbar } from "../components/navbar";
 
@@ -15,6 +16,7 @@ export default function Home() {
         transition={{ ease: "easeInOut", duration: 1.5 }}
       >
         <Hero />
+        <BlogList />
       </motion.main>
     </Fragment>
   );
