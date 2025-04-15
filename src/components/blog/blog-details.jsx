@@ -41,6 +41,11 @@ export const BlogCardDetail = forwardRef(({ blog, onClose }, ref) => {
         layoutId={`image-${blog.id}`}
         className="relative aspect-video max-h-[30dvh]"
       >
+        <div className="absolute top-2 left-2 bg-card z-10 text-xs rounded-sm p-2">
+          {userId === blog.authorId
+            ? "✍️ Your work"
+            : `📝 ${blog.author.name}'s article`}
+        </div>
         <img
           src={blog.imgURL}
           alt={blog.title}
@@ -57,12 +62,12 @@ export const BlogCardDetail = forwardRef(({ blog, onClose }, ref) => {
           {/* Buttons if author */}
           {userId === blog.authorId && (
             <div className="flex items-center gap-2">
-              <Button disable={isPending} onClick={handleDelete} size="sm">
+              <Button disabled={isPending} onClick={handleDelete} size="sm">
                 Delete
               </Button>
               <Button
                 onClick={() => navigate(`/edit/${blog.id}`)}
-                disable={isPending}
+                disabled={isPending}
                 size="sm"
                 variant="secondary"
               >

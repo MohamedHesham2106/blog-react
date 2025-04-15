@@ -38,7 +38,7 @@ export default function Login() {
   });
 
   // mutation (POST)
-  const { mutate } = useMutation({
+  const { mutate, isPending: isSubmitting } = useMutation({
     mutationFn: loginUtil,
     onSuccess: ({ token }) => {
       reset();
@@ -147,7 +147,11 @@ export default function Login() {
                 )}
               </div>
               <Button disabled={isPending} className="rounded-md" type="submit">
-                {isPending ? <Loader2 className="animate-spin" /> : "Login"}
+                {isPending || isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Login"
+                )}
               </Button>
               <div className="flex justify-between border-t border-border pt-4 items-center">
                 <p className="text-sm text-muted-foreground font-poppins">

@@ -3,7 +3,13 @@ import { useState } from "react";
 import { Eye } from "lucide-react";
 
 import { Button } from "./ui/button";
-import { Modal, ModalContent, ModalTrigger } from "./ui/modal";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from "./ui/modal";
 
 export const Preview = ({ current, poster }) => {
   const [preview, setPreview] = useState({
@@ -16,6 +22,7 @@ export const Preview = ({ current, poster }) => {
     <Modal>
       <ModalTrigger asChild>
         <Button
+          variant="secondary"
           size="icon"
           className="rounded-full cursor-pointer"
           onClick={() =>
@@ -40,11 +47,11 @@ export const Preview = ({ current, poster }) => {
 
           <div className="absolute inset-0 bg-gradient-to-t from-background via-black/20 to-transparent" />
 
-          <div className="absolute bottom-0 w-full p-4 md:p-6 z-10 text-white">
-            <h1 className="text-xl md:text-2xl font-bold drop-shadow-md">
+          <ModalHeader className="absolute bottom-0 w-full p-4 md:p-6 z-10 text-white">
+            <ModalTitle className="text-xl md:text-2xl font-bold drop-shadow-md">
               {preview.title || "Untitled"}
-            </h1>
-          </div>
+            </ModalTitle>
+          </ModalHeader>
         </div>
 
         <div className="p-4 md:p-6 max-h-[50vh] overflow-y-auto">

@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import { motion } from "framer-motion";
 
 import { BlogList } from "../components/blog/blog-list";
+import { FloatingButton } from "../components/floating-button";
 import { Hero } from "../components/hero";
 import { Navbar } from "../components/navbar";
 
@@ -17,6 +18,7 @@ export default function Home() {
       >
         <Hero />
         <BlogList />
+        <FloatingButton />
       </motion.main>
     </Fragment>
   );

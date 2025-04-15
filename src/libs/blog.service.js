@@ -39,3 +39,30 @@ export async function deleteBlogById(id) {
     throw new Error(error.response?.data?.message || "Failed to delete blog");
   }
 }
+export async function getBlogById(id) {
+  try {
+    const { data } = await axiosInstance.get(`/blog/${id}`);
+
+    return { ...data };
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to retrieve blog");
+  }
+}
+export async function updateBlog({ id, ...rest }) {
+  console.log(id);
+  
+  if (!id) {
+    throw new Error("Blog ID is required for update");
+  }
+
+  if (Object.keys(rest).length === 0) {
+    throw new Error("No update data provided");
+  }
+
+  try {
+    const { data } = await axiosInstance.put(`/blog/${id}`, rest);
+    return data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to update blog");
+  }
+}
