@@ -23,7 +23,7 @@ const placeholderImg =
 export const BlogForm = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [isPending, setTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef(null);
   const { userId } = useAuth();
 
@@ -91,7 +91,7 @@ export const BlogForm = () => {
         imgURL: imageUrl,
         authorId: userId,
       };
-      setTransition(() => mutate(data));
+      startTransition(() => mutate(data));
       setSelectedFile(null);
       setImagePreview(null);
       toast.success("🎉 Blog published successfully!");

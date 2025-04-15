@@ -32,3 +32,10 @@ export async function getAllBlogs({ page = 1, limit = 10 }) {
     );
   }
 }
+export async function deleteBlogById(id) {
+  try {
+    await axiosInstance.delete(`/blog/${id}`);
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to delete blog");
+  }
+}

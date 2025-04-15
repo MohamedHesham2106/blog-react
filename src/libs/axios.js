@@ -17,7 +17,7 @@ axiosInstance.interceptors.request.use(
     if (
       token &&
       requiresAuth(config.url) &&
-      ["post", "put", "patch"].includes(config.method.toLowerCase())
+      ["post", "put", "patch", "delete"].includes(config.method.toLowerCase())
     ) {
       config.headers.Authorization = `Bearer ${token}`;
     }

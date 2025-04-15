@@ -5,6 +5,11 @@ const registerSchema = yup.object({
     .string()
     .email("Invalid email format")
     .required("Email is required."),
+  name: yup
+    .string()
+    .min(7, "Name must be at least 7 characters long.")
+    .max(100, "Name must be at most 100 characters long.")
+    .required("Name is required."),
   password: yup
     .string()
     .min(8, "Password must contain 8 or more characters.")

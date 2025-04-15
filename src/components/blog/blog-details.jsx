@@ -1,9 +1,36 @@
-import { forwardRef } from "react";
+import { forwardRef, useTransition } from "react";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
+
+import { useAuth } from "../../hooks/use-auth";
+import { deleteBlogById } from "../../libs/blog.service";
+import { Button } from "../ui/button";
 
 export const BlogCardDetail = forwardRef(({ blog, onClose }, ref) => {
+  const queryClient = useQueryClient();
+
+  const [isPending, startTransition] = useTransition();
+  const navigate = useNavigate();
+  const { userId } = useAuth();
+
+  const { mutate } = useMutation({
+    mutationFn: deleteBlogById,
+    onSuccess: () => {
+      toast.success("Blog deleted successfully");
+      queryClient.invalidateQueries(["blogs"]);
+      onClose();
+    },
+    onError: () => {
+      toast.error("Failed to delete blog");
+    },
+  });
+  const handleDelete = () => {
+    startTransition(() => mutate(blog.id));
+  };
   return (
     <motion.div
       layoutId={`card-${blog.id}`}
@@ -20,20 +47,38 @@ export const BlogCardDetail = forwardRef(({ blog, onClose }, ref) => {
           className="w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full p-6 z-10">
+        <div className="absolute bottom-0 left-0 w-full p-6 z-10 flex items-center justify-between">
           <motion.h3
             layoutId={`title-${blog.id}`}
             className="text-white text-3xl font-bold drop-shadow-lg"
           >
             {blog.title}
           </motion.h3>
+          {/* Buttons if author */}
+          {userId === blog.authorId && (
+            <div className="flex items-center gap-2">
+              <Button disable={isPending} onClick={handleDelete} size="sm">
+                Delete
+              </Button>
+              <Button
+                onClick={() => navigate(`/edit/${blog.id}`)}
+                disable={isPending}
+                size="sm"
+                variant="secondary"
+              >
+                Edit
+              </Button>
+            </div>
+          )}
         </div>
-        <button
+        <Button
+          size="icon"
+          variant="secondary"
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors"
+          className="absolute top-4 right-4 z-10  rounded-full backdrop-blur-sm"
         >
           <X className="w-4 h-4 text-white" />
-        </button>
+        </Button>
       </motion.div>
 
       {/* Content section - grows with content but scrolls if too long */}

@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useAnimation,
+  useInView,
+} from "framer-motion";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 import { useOutsideClick } from "../../hooks/use-outside-click";
 import { getAllBlogs } from "../../libs/blog.service";
-import { cardVariants, containerVariants } from "../../libs/variants";
 import { Button } from "../ui/button";
 import { BlogCard } from "./blog-card";
 import { BlogCardDetail } from "./blog-details";
@@ -16,10 +20,20 @@ const DEFAULT_LIMIT = 6;
 export const BlogList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeBlog, setActiveBlog] = useState(null);
-
   const ref = useRef(null);
   const containerRef = useRef(null);
-
+  const controls = useAnimation();
+  const isInView = useInView(containerRef, {
+    once: false,
+    margin: "0px 100px -50px 0px",
+  });
+  useEffect(() => {
+    if (isInView) {
+      controls.start("visible");
+    } else {
+      controls.start("hidden");
+    }
+  }, [controls, isInView]);
   const { data, isError, isFetching } = useQuery({
     queryKey: ["blogs", currentPage],
     queryFn: () =>
@@ -59,9 +73,18 @@ export const BlogList = () => {
   }
 
   return (
-    <div
+    <motion.section
       className="container mx-auto px-4 py-8 font-poppins"
       ref={containerRef}
+      animate={controls}
+      variants={{
+        hidden: { opacity: 0, y: 100 },
+        visible: { opacity: 1, y: 0 },
+      }}
+      initial="hidden"
+      transition={{
+        duration: 1.2,
+      }}
     >
       {/* Header with title and results count */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
@@ -176,6 +199,6 @@ export const BlogList = () => {
           </>
         )}
       </AnimatePresence>
-    </div>
+    </motion.section>
   );
 };

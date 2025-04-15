@@ -34,6 +34,7 @@ export default function Register() {
     resolver: yupResolver(registerSchema),
     defaultValues: {
       email: "",
+      name: "",
       password: "",
     },
   });
@@ -86,6 +87,25 @@ export default function Register() {
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col space-y-4"
             >
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  {...register("name")}
+                />
+                {errors.name && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ ease: "easeInOut", duration: 0.5 }}
+                    className="text-primary text-xs font-poppins tracking-wider"
+                  >
+                    {errors.name.message}
+                  </motion.span>
+                )}
+              </div>
               <div className="flex flex-col space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
