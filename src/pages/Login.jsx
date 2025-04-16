@@ -14,7 +14,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useAuth } from "../hooks/use-auth";
-import { loginUtil } from "../libs/auth.service";
+import { loginUtil } from "../services/auth.service";
 import { loginSchema } from "../libs/schemas";
 
 export default function Login() {

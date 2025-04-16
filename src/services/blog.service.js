@@ -1,4 +1,4 @@
-import axiosInstance from "./axios";
+import axiosInstance from "../libs/axios";
 
 export async function createBlog({ title, description, imgURL, authorId }) {
   try {
@@ -50,7 +50,7 @@ export async function getBlogById(id) {
 }
 export async function updateBlog({ id, ...rest }) {
   console.log(id);
-  
+
   if (!id) {
     throw new Error("Blog ID is required for update");
   }

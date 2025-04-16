@@ -18,13 +18,12 @@ export const Navbar = () => {
   const navItems = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
-    //filter out
     ...(!isAuthenticated
       ? [
           { name: "Login", href: "/login" },
           { name: "Register", href: "/register" },
         ]
-      : []),
+      : [{ name: "New Blog", href: "/create" }]),
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);

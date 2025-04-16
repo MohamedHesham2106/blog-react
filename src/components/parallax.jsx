@@ -2,7 +2,7 @@ import { useScroll, useTransform } from "framer-motion";
 
 import { ParallaxText } from "./parallax-text";
 
-// some abstract txt
+// Abstract values
 const welcomeTexts = [
   {
     title: "Welcome to Nirvana",
@@ -36,6 +36,7 @@ export const Parallax = () => {
     [initialScrollThreshold, initialScrollThreshold + 300],
     [0, 1],
   );
+
   return (
     <section
       className="relative mx-auto max-w-full h-[150dvh]"

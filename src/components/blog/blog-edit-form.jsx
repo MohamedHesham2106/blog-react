@@ -8,8 +8,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { useAuth } from "../../hooks/use-auth";
-import { updateBlog } from "../../libs/blog.service";
 import { blogSchema } from "../../libs/schemas";
+import { updateBlog } from "../../services/blog.service";
 import { Preview } from "../preview";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";

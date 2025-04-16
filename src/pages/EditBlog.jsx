@@ -7,7 +7,7 @@ import { useParams } from "react-router";
 import { BlogEditForm } from "../components/blog/blog-edit-form";
 import { Navbar } from "../components/navbar";
 import { MultiStepLoader } from "../components/ui/step-loader";
-import { getBlogById } from "../libs/blog.service";
+import { getBlogById } from "../services/blog.service";
 
 const editBlogLoadingStates = [
   { text: "Fetching your brilliant draft..." },

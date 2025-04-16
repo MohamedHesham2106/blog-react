@@ -10,7 +10,7 @@ import {
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 import { useOutsideClick } from "../../hooks/use-outside-click";
-import { getAllBlogs } from "../../libs/blog.service";
+import { getAllBlogs } from "../../services/blog.service";
 import { Button } from "../ui/button";
 import { BlogCard } from "./blog-card";
 import { BlogCardDetail } from "./blog-details";
@@ -113,19 +113,20 @@ export const BlogList = () => {
 
       {/* Pagination Controls */}
       {pages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8 mb-12 sticky bottom-4 right-0 z-10">
-          <div className="bg-card p-2 rounded-sm shadow-lg">
-            <div className="flex items-center gap-2">
+        <div className="fixed bottom-4 left-0 right-0 flex justify-center z-10 px-2 sm:px-0">
+          <div className="bg-card p-2 rounded-md shadow-lg max-w-full overflow-x-auto">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 variant="secondary"
                 size="icon"
                 onClick={() => handlePageChange(Math.max(page - 1, 1))}
                 disabled={page === 1 || isFetching}
+                className="min-w-8 h-8"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 {Array.from({ length: Math.min(5, pages) }, (_, i) => {
                   let pageNum;
                   if (pages <= 5) {
@@ -144,20 +145,64 @@ export const BlogList = () => {
                       onClick={() => handlePageChange(pageNum)}
                       disabled={isFetching}
                       variant={page === pageNum ? "secondary" : "ghost"}
-                      className={` ${isFetching ? "opacity-70" : ""}`}
+                      className={`min-w-8 h-8 hidden sm:flex ${isFetching ? "opacity-70" : ""}`}
                     >
                       {pageNum}
                     </Button>
                   );
                 })}
+
+                {/* Mobile-optimized page buttons (show fewer) */}
+                {Array.from({ length: Math.min(3, pages) }, (_, i) => {
+                  let pageNum;
+                  if (pages <= 3) {
+                    pageNum = i + 1;
+                  } else if (page <= 2) {
+                    pageNum = i + 1;
+                  } else if (page >= pages - 1) {
+                    pageNum = pages - 2 + i;
+                  } else {
+                    pageNum = page - 1 + i;
+                  }
+
+                  return (
+                    <Button
+                      key={`mobile-${pageNum}`}
+                      onClick={() => handlePageChange(pageNum)}
+                      disabled={isFetching}
+                      variant={page === pageNum ? "secondary" : "ghost"}
+                      className={`min-w-8 h-8 flex sm:hidden ${isFetching ? "opacity-70" : ""}`}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+
                 {pages > 5 &&
                   page < pages - 2 &&
                   ![pages - 2, pages - 1, pages].includes(page) && (
                     <>
-                      <span className="px-2">...</span>
+                      <span className="px-1 sm:px-2 hidden sm:inline">...</span>
                       <Button
-                        variant={"ghost"}
-                        className={isFetching ? "opacity-70" : ""}
+                        variant="ghost"
+                        className={`min-w-8 h-8 hidden sm:flex ${isFetching ? "opacity-70" : ""}`}
+                        onClick={() => handlePageChange(pages)}
+                        disabled={isFetching}
+                      >
+                        {pages}
+                      </Button>
+                    </>
+                  )}
+
+                {/* Mobile ellipsis and last page */}
+                {pages > 3 &&
+                  page < pages - 1 &&
+                  ![pages - 1, pages].includes(page) && (
+                    <>
+                      <span className="px-1 flex sm:hidden">...</span>
+                      <Button
+                        variant="ghost"
+                        className={`min-w-8 h-8 flex sm:hidden ${isFetching ? "opacity-70" : ""}`}
                         onClick={() => handlePageChange(pages)}
                         disabled={isFetching}
                       >
@@ -172,6 +217,7 @@ export const BlogList = () => {
                 size="icon"
                 onClick={() => handlePageChange(Math.min(page + 1, pages))}
                 disabled={page === pages || isFetching}
+                className="min-w-8 h-8"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>

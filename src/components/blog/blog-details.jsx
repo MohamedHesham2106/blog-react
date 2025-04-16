@@ -7,7 +7,7 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { useAuth } from "../../hooks/use-auth";
-import { deleteBlogById } from "../../libs/blog.service";
+import { deleteBlogById } from "../../services/blog.service";
 import { Button } from "../ui/button";
 
 export const BlogCardDetail = forwardRef(({ blog, onClose }, ref) => {

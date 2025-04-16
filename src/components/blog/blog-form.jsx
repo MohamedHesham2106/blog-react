@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { useAuth } from "../../hooks/use-auth";
-import { createBlog } from "../../libs/blog.service";
+import { createBlog } from "../../services/blog.service";
 import { blogSchema } from "../../libs/schemas";
 import { Preview } from "../preview";
 import { Button } from "../ui/button";
