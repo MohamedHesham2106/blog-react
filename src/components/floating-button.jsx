@@ -3,10 +3,13 @@ import React from "react";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router";
 
+import { useAuth } from "../hooks/use-auth";
 import { Button } from "./ui/button";
 
 export const FloatingButton = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return null;
   return (
     <Button
       onClick={() => navigate("/create")}
