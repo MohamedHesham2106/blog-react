@@ -15,12 +15,12 @@ export async function loginUtil({ email, password }) {
     throw new Error(error.response.data.message);
   }
 }
-export async function registerUtil({ email, password }) {
+export async function registerUtil({ email, password, name }) {
   try {
     if (!email || !password) {
       throw new Error("Both email and password must be provided.");
     }
-    await axiosInstance.post("/signup", { email, password });
+    await axiosInstance.post("/signup", { email, password, name });
   } catch (error) {
     throw new Error(error.response.data.message);
   }

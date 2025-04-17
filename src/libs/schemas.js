@@ -12,14 +12,8 @@ const registerSchema = yup.object({
     .required("Name is required."),
   password: yup
     .string()
-    .min(8, "Password must contain 8 or more characters.")
-    .matches(/[a-z]/, "Password must contain at least 1 lowercase letter.")
-    .matches(/[A-Z]/, "Password must contain at least 1 uppercase letter.")
+    .min(7, "Password must contain 8 or more characters.")
     .matches(/[0-9]/, "Password must contain at least 1 number.")
-    .matches(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Password must contain at least 1 special character.",
-    )
     .required("Password is required."),
 });
 
