@@ -23,7 +23,10 @@ export const Navbar = () => {
           { name: "Login", href: "/login" },
           { name: "Register", href: "/register" },
         ]
-      : [{ name: "New Blog", href: "/create" }]),
+      : [
+          { name: "New Blog", href: "/create" },
+          { name: "My Blogs", href: "/my-blogs" },
+        ]),
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);

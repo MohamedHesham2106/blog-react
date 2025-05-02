@@ -29,7 +29,12 @@ export const UserButton = () => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <Button variant='secondary' onClick={toggleMenu} size="icon" className="rounded-full">
+      <Button
+        variant="secondary"
+        onClick={toggleMenu}
+        size="icon"
+        className="rounded-full"
+      >
         <User2 className="h-4 w-4" />
       </Button>
 
@@ -40,8 +45,15 @@ export const UserButton = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-3 mt-2 p-2 rounded-sm shadow-lg bg-card z-50"
+            className="absolute right-3 mt-2 p-2 rounded-sm shadow-lg bg-card z-50 min-w-[150px] flex flex-col gap-1"
           >
+            <Link
+              to="/my-blogs"
+              className="flex items-center gap-1 p-2 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 text-sm font-semibold justify-center"
+            >
+              <NotepadText className="h-4 w-4" />
+              My Blogs
+            </Link>
             <Button
               onClick={logout}
               variant="secondary"

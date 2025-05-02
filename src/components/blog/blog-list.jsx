@@ -1,57 +1,86 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "@uidotdev/usehooks";
 import {
   AnimatePresence,
   motion,
   useAnimation,
   useInView,
 } from "framer-motion";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 import { useOutsideClick } from "../../hooks/use-outside-click";
 import { getAllBlogs } from "../../services/blog.service";
-import { Button } from "../ui/button";
-import { BlogCard } from "./blog-card";
-import { BlogCardDetail } from "./blog-details";
+import { BlogGrid } from "./blog-grid";
+import { BlogListHeader } from "./blog-list-header";
+import { BlogModal } from "./blog-modal";
+import { LoadingOverlay } from "./loading-overlay";
+import { PaginationControls } from "./pagination-control";
+import { Search } from "./search";
 
 const DEFAULT_LIMIT = 6;
 
-export const BlogList = () => {
+export const BlogList = ({ filterByAuthorId, header }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [activeBlog, setActiveBlog] = useState(null);
+
   const ref = useRef(null);
   const containerRef = useRef(null);
+
   const controls = useAnimation();
   const isInView = useInView(containerRef, {
     once: false,
     margin: "0px 100px -50px 0px",
   });
+
   useEffect(() => {
-    if (isInView) {
-      controls.start("visible");
-    } else {
-      controls.start("hidden");
-    }
+    controls.start(isInView ? "visible" : "hidden");
   }, [controls, isInView]);
+
+  // fetch all blogs
   const { data, isError, isFetching } = useQuery({
-    queryKey: ["blogs", currentPage],
-    queryFn: () =>
-      getAllBlogs({
-        page: currentPage,
-        limit: DEFAULT_LIMIT,
-      }),
-    keepPreviousData: true,
-    staleTime: 5000,
+    queryKey: ["blogs"],
+    queryFn: () => getAllBlogs({ page: 1, limit: 1000 }),
+    staleTime: 5 * 60 * 1000,
   });
 
-  const { blogs, meta } = data || { blogs: [], meta: null };
-  const { total = 0, page = 1, limit = DEFAULT_LIMIT, pages = 1 } = meta || {};
+  const filteredBlogs = useMemo(() => {
+    const allBlogs = data?.blogs || [];
+    const term = debouncedSearchTerm.trim().toLowerCase();
+    let filtered = allBlogs;
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
+    if (filterByAuthorId) {
+      filtered = filtered.filter((blog) => blog.authorId === filterByAuthorId);
+    }
 
+    if (term) {
+      filtered = filtered.filter(
+        (blog) =>
+          blog.title.toLowerCase().includes(term) ||
+          blog.description.toLowerCase().includes(term),
+      );
+    }
+
+    return filtered;
+  }, [data?.blogs, debouncedSearchTerm, filterByAuthorId]);
+
+  // pagination
+  const total = filteredBlogs.length;
+  const pages = Math.ceil(total / DEFAULT_LIMIT) || 1;
+  const currentPageSafe = Math.min(currentPage, pages);
+  const paginatedBlogs = filteredBlogs.slice(
+    (currentPageSafe - 1) * DEFAULT_LIMIT,
+    currentPageSafe * DEFAULT_LIMIT,
+  );
+
+  // reset page when debounced search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm]);
+
+  // Escape and outside click to close modal
   useEffect(() => {
     const onKeyDown = (e) => e.key === "Escape" && setActiveBlog(null);
     document.body.style.overflow = activeBlog ? "hidden" : "auto";
@@ -82,167 +111,46 @@ export const BlogList = () => {
         visible: { opacity: 1, y: 0 },
       }}
       initial="hidden"
-      transition={{
-        duration: 1.2,
-      }}
+      transition={{ duration: 1.2 }}
     >
-      {/* Header with title and results count */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
-        <h2 className="text-5xl font-bold text-foreground font-playfair">
-          Latest Blogs
-        </h2>
-        <div className="text-muted-foreground text-xs bg-secondary p-2 rounded-sm">
-          Showing {(page - 1) * limit + 1}-{Math.min(page * limit, total)} of{" "}
-          {total} blogs
-        </div>
-      </div>
+      <BlogListHeader
+        page={currentPageSafe}
+        limit={DEFAULT_LIMIT}
+        total={total}
+        header={header ?? "Latest Blogs"}
+        searchAcetive={!!debouncedSearchTerm.trim()}
+      />
+      <Search
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search blogs..."
+      />
+      <LoadingOverlay fetching={isFetching} />
 
-      {/* Loading overlay that doesn't affect layout */}
-      {isFetching && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 pointer-events-none">
-          <Loader2 className="w-12 h-12 animate-spin text-primary" />
-        </div>
-      )}
-
-      {/* Blog Grid with stable height */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 min-h-[600px] relative">
-        {blogs.map((blog) => (
-          <BlogCard key={blog.id} blog={blog} onClick={setActiveBlog} />
-        ))}
-      </div>
-
-      {/* Pagination Controls */}
-      {pages > 1 && (
-        <div className="fixed bottom-4 left-0 right-0 flex justify-center z-10 px-2 sm:px-0">
-          <div className="bg-card p-2 rounded-md shadow-lg max-w-full overflow-x-auto">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={() => handlePageChange(Math.max(page - 1, 1))}
-                disabled={page === 1 || isFetching}
-                className="min-w-8 h-8"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-
-              <div className="flex items-center gap-1 sm:gap-2">
-                {Array.from({ length: Math.min(5, pages) }, (_, i) => {
-                  let pageNum;
-                  if (pages <= 5) {
-                    pageNum = i + 1;
-                  } else if (page <= 3) {
-                    pageNum = i + 1;
-                  } else if (page >= pages - 2) {
-                    pageNum = pages - 4 + i;
-                  } else {
-                    pageNum = page - 2 + i;
-                  }
-
-                  return (
-                    <Button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      disabled={isFetching}
-                      variant={page === pageNum ? "secondary" : "ghost"}
-                      className={`min-w-8 h-8 hidden sm:flex ${isFetching ? "opacity-70" : ""}`}
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                })}
-
-                {/* Mobile-optimized page buttons (show fewer) */}
-                {Array.from({ length: Math.min(3, pages) }, (_, i) => {
-                  let pageNum;
-                  if (pages <= 3) {
-                    pageNum = i + 1;
-                  } else if (page <= 2) {
-                    pageNum = i + 1;
-                  } else if (page >= pages - 1) {
-                    pageNum = pages - 2 + i;
-                  } else {
-                    pageNum = page - 1 + i;
-                  }
-
-                  return (
-                    <Button
-                      key={`mobile-${pageNum}`}
-                      onClick={() => handlePageChange(pageNum)}
-                      disabled={isFetching}
-                      variant={page === pageNum ? "secondary" : "ghost"}
-                      className={`min-w-8 h-8 flex sm:hidden ${isFetching ? "opacity-70" : ""}`}
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                })}
-
-                {pages > 5 &&
-                  page < pages - 2 &&
-                  ![pages - 2, pages - 1, pages].includes(page) && (
-                    <>
-                      <span className="px-1 sm:px-2 hidden sm:inline">...</span>
-                      <Button
-                        variant="ghost"
-                        className={`min-w-8 h-8 hidden sm:flex ${isFetching ? "opacity-70" : ""}`}
-                        onClick={() => handlePageChange(pages)}
-                        disabled={isFetching}
-                      >
-                        {pages}
-                      </Button>
-                    </>
-                  )}
-
-                {/* Mobile ellipsis and last page */}
-                {pages > 3 &&
-                  page < pages - 1 &&
-                  ![pages - 1, pages].includes(page) && (
-                    <>
-                      <span className="px-1 flex sm:hidden">...</span>
-                      <Button
-                        variant="ghost"
-                        className={`min-w-8 h-8 flex sm:hidden ${isFetching ? "opacity-70" : ""}`}
-                        onClick={() => handlePageChange(pages)}
-                        disabled={isFetching}
-                      >
-                        {pages}
-                      </Button>
-                    </>
-                  )}
-              </div>
-
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={() => handlePageChange(Math.min(page + 1, pages))}
-                disabled={page === pages || isFetching}
-                className="min-w-8 h-8"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+      {paginatedBlogs.length > 0 ? (
+        <BlogGrid blogs={paginatedBlogs} onBlogClick={setActiveBlog} />
+      ) : (
+        <div className="text-center py-20 text-muted-foreground">
+          {debouncedSearchTerm.trim()
+            ? `No blogs found for "${debouncedSearchTerm.trim()}".`
+            : "No blogs available."}
         </div>
       )}
+
+      <PaginationControls
+        page={currentPageSafe}
+        pages={pages}
+        isFetching={isFetching}
+        onPageChange={setCurrentPage}
+      />
 
       <AnimatePresence>
         {activeBlog && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/20 z-10"
-            />
-            <div className="fixed inset-0 grid place-items-center z-[100]">
-              <BlogCardDetail
-                ref={ref}
-                blog={activeBlog}
-                onClose={() => setActiveBlog(null)}
-              />
-            </div>
-          </>
+          <BlogModal
+            ref={ref}
+            blog={activeBlog}
+            onClose={() => setActiveBlog(null)}
+          />
         )}
       </AnimatePresence>
     </motion.section>

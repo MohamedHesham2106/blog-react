@@ -14,8 +14,8 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useAuth } from "../hooks/use-auth";
-import { loginUtil } from "../services/auth.service";
 import { loginSchema } from "../libs/schemas";
+import { loginUtil } from "../services/auth.service";
 
 export default function Login() {
   // states
@@ -45,7 +45,7 @@ export default function Login() {
       setAuth(token);
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message ?? "Something went wrong");
     },
   });
   // handler

@@ -1,7 +1,5 @@
 import React, { useState, useTransition } from "react";
 
-
-
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -9,8 +7,6 @@ import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate } from "react-router";
 import { toast } from "sonner";
-
-
 
 import { LoginSVG } from "../components/svg/login-svg";
 import { Nirvana } from "../components/svg/logo";
@@ -20,10 +16,6 @@ import { Label } from "../components/ui/label";
 import { useAuth } from "../hooks/use-auth";
 import { registerSchema } from "../libs/schemas";
 import { registerUtil } from "../services/auth.service";
-
-
-
-
 
 export default function Register() {
   // states
@@ -55,7 +47,7 @@ export default function Register() {
       navigate("/login");
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message ?? "Something went wrong");
     },
   });
   // handler
