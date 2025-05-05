@@ -1,15 +1,15 @@
 import { useRef, useState, useTransition } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Loader2, Upload, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { useAuth } from "../../hooks/use-auth";
-import { createBlog } from "../../services/blog.service";
 import { blogSchema } from "../../libs/schemas";
+import { createBlog } from "../../services/blog.service";
 import { Preview } from "../preview";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -26,7 +26,7 @@ export const BlogForm = () => {
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef(null);
   const { userId } = useAuth();
-
+  const queryClient = useQueryClient();
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing("imageUploader");
 
@@ -48,6 +48,7 @@ export const BlogForm = () => {
     mutationFn: (data) => createBlog(data),
     onSuccess: () => {
       reset();
+      queryClient.invalidateQueries(["blogs"]);
     },
     onError: (error) => {
       console.error("onError:", error);

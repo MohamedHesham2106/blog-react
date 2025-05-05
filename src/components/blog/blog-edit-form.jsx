@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Loader2, Upload, X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ export const BlogEditForm = ({ blog }) => {
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef(null);
   const { userId } = useAuth();
-
+  const queryClient = useQueryClient();
   const { startUpload, isUploading } = useUploadThing("imageUploader");
 
   const {
@@ -54,7 +54,7 @@ export const BlogEditForm = ({ blog }) => {
   const { mutate } = useMutation({
     mutationFn: (data) => updateBlog({ id: blog.id, ...data }),
     onSuccess: () => {
-      toast.success("✏️ Blog updated successfully!");
+      queryClient.invalidateQueries(["blogs"]);
     },
     onError: (error) => {
       console.error("Update error:", error);
@@ -220,10 +220,7 @@ export const BlogEditForm = ({ blog }) => {
                 disabled={isPending || isUploading}
               >
                 {isPending || isUploading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   "Save Changes"
                 )}
